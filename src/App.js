@@ -1,26 +1,34 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Navigate, useRoutes } from "react-router-dom";
+import { connect } from "react-redux";
 
-function App() {
+import logo from "./logo.svg";
+import "./App.css";
+import RecordPage from "./pages/record/record.component";
+import SignInSignUp from "./pages/sign-in-sign-up/sign-in-sign-up.component";
+import { createStructuredSelector } from "reselect";
+import { selectCurrentUser } from "./redux/user/user.selector";
+
+const RecordApp = ({ user }) => {
+  let routes = useRoutes([
+    { path: "/", element: user ? <RecordPage /> : <Navigate to='/login' /> },
+    { path: "/login", element: user ? <Navigate to='/' /> : <SignInSignUp /> },
+  ]);
+  return routes;
+};
+
+function App({ user }) {
+  useEffect(() => {}, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <RecordApp user={user} />
+    </Router>
   );
 }
 
-export default App;
+const mapStateToProps = createStructuredSelector({
+  user: selectCurrentUser,
+});
+
+export default connect(mapStateToProps)(App);
